@@ -417,12 +417,11 @@
         <div class="form-row">
           <div class="field"><label>Date</label><input type="date" id="w-date" /></div>
           <div class="field"><label>Tries (1–6)</label><input type="number" class="narrow" id="w-tries" min="1" max="6" placeholder="3" /></div>
-          <div class="field"><label>Country (optional)</label><input type="text" id="w-country" placeholder="Finland" /></div>
           <button class="btn-add btn-worldle" onclick="addEntry('worldle')">+ Add</button>
         </div>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Date</th><th>Tries</th><th>Country</th><th></th></tr></thead>
+        <thead><tr><th>Date</th><th>Tries</th><th></th></tr></thead>
         <tbody id="tbody-worldle"></tbody>
       </table></div>
     </div>
@@ -558,15 +557,13 @@ window.addEntry = async game => {
   } else {
     const date=document.getElementById('w-date').value||todayStr();
     const tries=parseInt(document.getElementById('w-tries').value);
-    const country=document.getElementById('w-country').value.trim();
     if(isNaN(tries)||tries<1){ alert('Enter tries (1–6)'); return; }
-    data.worldle.unshift({date,tries,country});
+    data.worldle.unshift({date,tries});
     save(data);
     document.getElementById('w-date').value='';
     document.getElementById('w-tries').value='';
-    document.getElementById('w-country').value='';
     renderMine('worldle');
-    payload={tries,date,country};
+    payload={tries,date};
   }
   if(db && getName()) {
     try { await addDoc(collection(db,'scores_'+game),{name:getName(),...payload,ts:serverTimestamp()}); }
@@ -644,13 +641,12 @@ function renderWorldle(entries) {
   const rec=[...entries].reverse().slice(-20);
   renderBarChart('chart-worldle', rec.map(e=>fmtDate(e.date)), rec.map(e=>e.tries));
   const tbody=document.getElementById('tbody-worldle');
-  if(!entries.length){ tbody.innerHTML='<tr><td colspan="4" class="empty-state">No entries yet.</td></tr>'; return; }
+  if(!entries.length){ tbody.innerHTML='<tr><td colspan="3" class="empty-state">No entries yet.</td></tr>'; return; }
   tbody.innerHTML=entries.map((e,i)=>{
     const cls=e.tries<=1?'tries-1':e.tries===2?'tries-2':e.tries===3?'tries-3':e.tries===4?'tries-4':e.tries===5?'tries-5':'tries-6plus';
     return `<tr>
       <td>${fmtDate(e.date)}</td>
       <td><span class="tries-badge ${cls}">${e.tries}</span></td>
-      <td style="color:var(--muted2);font-size:0.75rem">${e.country||'—'}</td>
       <td><button class="btn-del" onclick="deleteEntry('worldle',${i})">del</button></td>
     </tr>`;
   }).join('');
