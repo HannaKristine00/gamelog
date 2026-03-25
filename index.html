@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #141416;
+      --surface2: #1c1c1f;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.13);
+      --text: #f0f0f0;
+      --muted: #5a5a62;
+      --muted2: #888892;
+      --queens: #8b7cf8;
+      --queens-dim: rgba(139,124,248,0.12);
+      --tango: #f08c50;
+      --tango-dim: rgba(240,140,80,0.12);
+      --worldle: #3bbf8e;
+      --worldle-dim: rgba(59,191,142,0.12);
+      --radius: 12px;
+      --radius-sm: 7px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface2);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      padding: 3rem 2rem 1rem;
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    header p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .tabs {
+      display: flex;
+      gap: 2px;
+      padding: 1.5rem 2rem 1.25rem;
+      max-width: 780px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .tab {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--muted2);
+      transition: all 0.15s;
+    }
+    .tab:hover { color: var(--text); background: var(--surface2); }
+    .tab.active-queens { background: var(--queens-dim); color: var(--queens); font-weight: 500; }
+    .tab.active-tango  { background: var(--tango-dim);  color: var(--tango);  font-weight: 500; }
+    .tab.active-worldle{ background: var(--worldle-dim);color: var(--worldle);font-weight: 500; }
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+    .section { display: none; }
+    .section.visible { display: block; }
+
+    /* --- STATS ROW --- */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 1px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--border);
+    }
+    .stat-card {
+      background: var(--surface);
+      padding: 1.25rem 1.25rem;
+    }
+    .stat-card .label {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .stat-card .value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .stat-card .sub {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* --- FORM --- */
+    .add-form {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+    }
+    .add-form .form-title {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .form-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .field label {
+      font-size: 0.66rem;
+      color: var(--muted2);
+      letter-spacing: 0.03em;
+    }
+    .field input {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      background: var(--surface2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 8px 11px;
+      color: var(--text);
+      width: 130px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: var(--muted2); }
+    .field input[type="date"] { width: 150px; color-scheme: dark; }
+    .field input.narrow { width: 80px; }
+    .btn-add {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      color: #000;
+      align-self: flex-end;
+    }
+    .btn-add:hover { opacity: 0.85; }
+    .btn-add:active { transform: scale(0.97); }
+    .btn-queens  { background: var(--queens); }
+    .btn-tango   { background: var(--tango); }
+    .btn-worldle { background: var(--worldle); }
+
+    /* --- TABLE --- */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    th {
+      text-align: left;
+      font-size: 0.63rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      font-weight: 400;
+    }
+    td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+    .chip {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .chip-queens  { background: var(--queens-dim);  color: var(--queens); }
+    .chip-tango   { background: var(--tango-dim);   color: var(--tango); }
+    .chip-worldle { background: var(--worldle-dim); color: var(--worldle); }
+    .btn-del {
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.1s;
+    }
+    .btn-del:hover { color: #ff6b6b; border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.06); }
+    .empty-state {
+      padding: 3rem 1rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* --- CHART --- */
+    .chart-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.25rem 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+    }
+    .chart-title {
+      font-size: 0.63rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    canvas { width: 100% !important; }
+
+    /* --- WORLDLE tries badges --- */
+    .tries-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tries-1 { background: rgba(59,191,100,0.15); color: #3bbf64; }
+    .tries-2 { background: rgba(59,191,142,0.15); color: #3bbf8e; }
+    .tries-3 { background: rgba(59,170,191,0.15); color: #3baabf; }
+    .tries-4 { background: rgba(191,170,59,0.15);  color: #bfaa3b; }
+    .tries-5 { background: rgba(240,140,80,0.15);  color: #f08c50; }
+    .tries-6plus { background: rgba(255,80,80,0.15); color: #ff6b6b; }
+
+    @media (max-width: 600px) {
+      header, .tabs, main { padding-left: 1rem; padding-right: 1rem; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .form-row { flex-direction: column; }
+      .field input, .field input[type="date"], .field input.narrow { width: 100%; }
+      .btn-add { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Game Tracker</h1>
+  <p>LinkedIn · Queens · Tango &nbsp;|&nbsp; Worldle</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active-queens" onclick="switchTab('queens')">Queens</button>
+  <button class="tab" onclick="switchTab('tango')">Tango</button>
+  <button class="tab" onclick="switchTab('worldle')">Worldle</button>
+</div>
+
+<main>
+
+  <!-- ══════════ QUEENS ══════════ -->
+  <div id="sec-queens" class="section visible">
+    <div class="stats-row" id="stats-queens"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">Time trend (seconds)</div>
+      <canvas id="chart-queens" height="120"></canvas>
+    </div>
+    <div class="add-form">
+      <div class="form-title">Add result</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="q-date" />
+        </div>
+        <div class="field">
+          <label>Time (mm:ss)</label>
+          <input type="text" id="q-time" placeholder="01:34" />
+        </div>
+        <button class="btn-add btn-queens" onclick="addEntry('queens')">+ Add</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Time</th><th>Score</th><th></th></tr></thead>
+        <tbody id="tbody-queens"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════ TANGO ══════════ -->
+  <div id="sec-tango" class="section">
+    <div class="stats-row" id="stats-tango"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">Time trend (seconds)</div>
+      <canvas id="chart-tango" height="120"></canvas>
+    </div>
+    <div class="add-form">
+      <div class="form-title">Add result</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="t-date" />
+        </div>
+        <div class="field">
+          <label>Time (mm:ss)</label>
+          <input type="text" id="t-time" placeholder="00:58" />
+        </div>
+        <button class="btn-add btn-tango" onclick="addEntry('tango')">+ Add</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Time</th><th>Score</th><th></th></tr></thead>
+        <tbody id="tbody-tango"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════ WORLDLE ══════════ -->
+  <div id="sec-worldle" class="section">
+    <div class="stats-row" id="stats-worldle"></div>
+    <div class="chart-wrap">
+      <div class="chart-title">Tries per day</div>
+      <canvas id="chart-worldle" height="120"></canvas>
+    </div>
+    <div class="add-form">
+      <div class="form-title">Add result</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="w-date" />
+        </div>
+        <div class="field">
+          <label>Tries (1–6+)</label>
+          <input type="number" class="narrow" id="w-tries" min="1" max="6" placeholder="3" />
+        </div>
+        <div class="field">
+          <label>Country (optional)</label>
+          <input type="text" id="w-country" placeholder="Finland" />
+        </div>
+        <button class="btn-add btn-worldle" onclick="addEntry('worldle')">+ Add</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Tries</th><th>Country</th><th></th></tr></thead>
+        <tbody id="tbody-worldle"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── STORAGE ──────────────────────────────────────────────
+const KEY = 'gametracker_v1';
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || {queens:[], tango:[], worldle:[]}; }
+  catch(e) { return {queens:[], tango:[], worldle:[]}; }
+}
+function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
+
+// ── UTILS ────────────────────────────────────────────────
+function parseTime(s) {
+  s = s.trim();
+  if (!s) return null;
+  if (s.includes(':')) {
+    const [m, sec] = s.split(':').map(Number);
+    if (isNaN(m) || isNaN(sec)) return null;
+    return m * 60 + sec;
+  }
+  const n = Number(s);
+  return isNaN(n) ? null : n;
+}
+function fmtTime(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+function fmtDate(d) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'2-digit'});
+}
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// ── SCORE (rank within personal bests) ───────────────────
+function computeScore(secs, allSecs) {
+  if (allSecs.length < 2) return null;
+  const best = Math.min(...allSecs), worst = Math.max(...allSecs);
+  if (best === worst) return null;
+  const pct = 100 - Math.round(((secs - best) / (worst - best)) * 100);
+  return pct;
+}
+
+// ── TABS ─────────────────────────────────────────────────
+let currentTab = 'queens';
+const charts = {};
+function switchTab(tab) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('visible'));
+  document.getElementById('sec-' + tab).classList.add('visible');
+  document.querySelectorAll('.tab').forEach(b => {
+    b.className = 'tab';
+    if (b.textContent.toLowerCase() === tab) b.classList.add('active-' + tab);
+  });
+  currentTab = tab;
+  render(tab);
+}
+
+// ── ADD ENTRY ─────────────────────────────────────────────
+function addEntry(game) {
+  const data = load();
+  if (game === 'queens' || game === 'tango') {
+    const dateEl = document.getElementById((game === 'queens' ? 'q' : 't') + '-date');
+    const timeEl = document.getElementById((game === 'queens' ? 'q' : 't') + '-time');
+    const date = dateEl.value || todayStr();
+    const secs = parseTime(timeEl.value);
+    if (secs === null || secs <= 0) { alert('Please enter a valid time like 01:34'); return; }
+    data[game].unshift({ date, secs });
+    dateEl.value = ''; timeEl.value = '';
+  } else {
+    const date = document.getElementById('w-date').value || todayStr();
+    const tries = parseInt(document.getElementById('w-tries').value);
+    const country = document.getElementById('w-country').value.trim();
+    if (isNaN(tries) || tries < 1) { alert('Please enter number of tries (1 or more)'); return; }
+    data.worldle.unshift({ date, tries, country });
+    document.getElementById('w-date').value = '';
+    document.getElementById('w-tries').value = '';
+    document.getElementById('w-country').value = '';
+  }
+  save(data);
+  render(game);
+}
+
+// ── DELETE ENTRY ──────────────────────────────────────────
+function deleteEntry(game, idx) {
+  const data = load();
+  data[game].splice(idx, 1);
+  save(data);
+  render(game);
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function render(game) {
+  const data = load();
+  const entries = data[game];
+  if (game === 'queens' || game === 'tango') renderTimegame(game, entries);
+  else renderWorldle(entries);
+}
+
+function renderTimegame(game, entries) {
+  const allSecs = entries.map(e => e.secs);
+  const statsEl = document.getElementById('stats-' + game);
+  const best = allSecs.length ? Math.min(...allSecs) : null;
+  const avg  = allSecs.length ? Math.round(allSecs.reduce((a,b)=>a+b,0) / allSecs.length) : null;
+  const last = entries.length ? entries[0].secs : null;
+  statsEl.innerHTML = `
+    <div class="stat-card">
+      <div class="label">Best time</div>
+      <div class="value" style="color:var(--${game})">${best !== null ? fmtTime(best) : '—'}</div>
+      <div class="sub">personal record</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Average</div>
+      <div class="value">${avg !== null ? fmtTime(avg) : '—'}</div>
+      <div class="sub">${allSecs.length} entries</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Last played</div>
+      <div class="value">${last !== null ? fmtTime(last) : '—'}</div>
+      <div class="sub">${entries.length ? fmtDate(entries[0].date) : '—'}</div>
+    </div>`;
+
+  // chart (last 20, chronological)
+  const recent = [...entries].reverse().slice(-20);
+  const labels = recent.map(e => fmtDate(e.date));
+  const vals   = recent.map(e => e.secs);
+  renderLineChart('chart-' + game, labels, vals, getComputedStyle(document.documentElement).getPropertyValue('--' + game).trim() || '#888');
+
+  // table
+  const tbody = document.getElementById('tbody-' + game);
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No entries yet — add your first result above.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = entries.map((e, i) => {
+    const score = computeScore(e.secs, allSecs);
+    const scoreTxt = score !== null ? score + '%' : '—';
+    const isPB = e.secs === best;
+    return `<tr>
+      <td>${fmtDate(e.date)}</td>
+      <td style="font-weight:500">${fmtTime(e.secs)} ${isPB ? '⭑' : ''}</td>
+      <td><span class="chip chip-${game}">${scoreTxt}</span></td>
+      <td><button class="btn-del" onclick="deleteEntry('${game}',${i})">del</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderWorldle(entries) {
+  const statsEl = document.getElementById('stats-worldle');
+  const allTries = entries.map(e => e.tries);
+  const best = allTries.length ? Math.min(...allTries) : null;
+  const avg  = allTries.length ? (allTries.reduce((a,b)=>a+b,0) / allTries.length).toFixed(1) : null;
+  const streak = computeStreak(entries);
+  statsEl.innerHTML = `
+    <div class="stat-card">
+      <div class="label">Best (fewest tries)</div>
+      <div class="value" style="color:var(--worldle)">${best !== null ? best : '—'}</div>
+      <div class="sub">tries</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Average tries</div>
+      <div class="value">${avg !== null ? avg : '—'}</div>
+      <div class="sub">${allTries.length} entries</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Current streak</div>
+      <div class="value">${streak}</div>
+      <div class="sub">days played</div>
+    </div>`;
+
+  const recent = [...entries].reverse().slice(-20);
+  const labels = recent.map(e => fmtDate(e.date));
+  const vals   = recent.map(e => e.tries);
+  renderBarChart('chart-worldle', labels, vals);
+
+  const tbody = document.getElementById('tbody-worldle');
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No entries yet — add your first result above.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = entries.map((e, i) => {
+    const cls = e.tries <= 1 ? 'tries-1' : e.tries === 2 ? 'tries-2' : e.tries === 3 ? 'tries-3' : e.tries === 4 ? 'tries-4' : e.tries === 5 ? 'tries-5' : 'tries-6plus';
+    return `<tr>
+      <td>${fmtDate(e.date)}</td>
+      <td><span class="tries-badge ${cls}">${e.tries}</span></td>
+      <td style="color:var(--muted); font-size:0.75rem">${e.country || '—'}</td>
+      <td><button class="btn-del" onclick="deleteEntry('worldle',${i})">del</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function computeStreak(entries) {
+  if (!entries.length) return 0;
+  const sorted = [...entries].sort((a,b) => b.date.localeCompare(a.date));
+  const today = todayStr();
+  let streak = 0;
+  let expect = today;
+  for (const e of sorted) {
+    if (e.date === expect) {
+      streak++;
+      const d = new Date(expect + 'T00:00:00');
+      d.setDate(d.getDate() - 1);
+      expect = d.toISOString().slice(0,10);
+    } else { break; }
+  }
+  return streak;
+}
+
+// ── CHARTS ────────────────────────────────────────────────
+function chartDefaults() {
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false }, tooltip: {
+      callbacks: { label: ctx => ctx.dataset.type === 'bar' ? ctx.raw + ' tries' : fmtTime(ctx.raw) }
+    }},
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#5a5a62', maxRotation: 30 }},
+      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: { family: 'Inter', size: 10 }, color: '#5a5a62' }}
+    }
+  };
+}
+
+function renderLineChart(id, labels, vals, color) {
+  const el = document.getElementById(id);
+  if (charts[id]) charts[id].destroy();
+  if (!vals.length) { el.getContext('2d').clearRect(0,0,el.width,el.height); return; }
+  const cfg = chartDefaults();
+  cfg.scales.y.ticks.callback = v => fmtTime(v);
+  charts[id] = new Chart(el, {
+    type: 'line',
+    data: { labels, datasets: [{ data: vals, borderColor: color, backgroundColor: color + '18', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: color }] },
+    options: cfg
+  });
+}
+
+function renderBarChart(id, labels, vals) {
+  const el = document.getElementById(id);
+  if (charts[id]) charts[id].destroy();
+  if (!vals.length) { el.getContext('2d').clearRect(0,0,el.width,el.height); return; }
+  const cfg = chartDefaults();
+  cfg.scales.y.min = 1; cfg.scales.y.max = 6;
+  cfg.scales.y.ticks.stepSize = 1;
+  cfg.datasets = [{ type: 'bar' }];
+  charts[id] = new Chart(el, {
+    type: 'bar',
+    data: { labels, datasets: [{ data: vals, backgroundColor: '#2d8a6b33', borderColor: '#2d8a6b', borderWidth: 1.5, borderRadius: 4, type: 'bar' }] },
+    options: cfg
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────
+document.getElementById('q-date').value = todayStr();
+document.getElementById('t-date').value = todayStr();
+document.getElementById('w-date').value = todayStr();
+render('queens');
+</script>
+</body>
+</html>
