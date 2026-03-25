@@ -28,159 +28,181 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--surface2);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
+
+    /* ── HEADER ── */
     header {
-      padding: 3rem 2rem 1rem;
-      max-width: 780px;
+      padding: 2.5rem 2rem 0;
+      max-width: 820px;
       margin: 0 auto;
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
     header h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 600;
       letter-spacing: -0.01em;
-      color: var(--text);
     }
-    header p {
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.04em;
+    #player-name-display {
+      font-size: 0.75rem;
+      color: var(--muted2);
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      transition: border-color 0.15s;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .tabs {
-      display: flex;
-      gap: 2px;
-      padding: 1.5rem 2rem 1.25rem;
-      max-width: 780px;
-      margin: 0 auto;
+    #player-name-display:hover { border-color: var(--muted2); color: var(--text); }
+    #player-name-display.set { color: var(--text); }
+
+    /* ── NAME MODAL ── */
+    #name-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #name-modal.open { display: flex; }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 320px;
+      max-width: 90vw;
+    }
+    .modal-box h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem;
+    }
+    .modal-box p { font-size: 0.75rem; color: var(--muted2); margin-bottom: 1.25rem; line-height: 1.5; }
+    .modal-box input {
+      width: 100%;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      background: var(--surface2); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm); padding: 9px 12px;
+      color: var(--text); outline: none; margin-bottom: 1rem;
+    }
+    .modal-box input:focus { border-color: var(--muted2); }
+    .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+    .btn-ghost {
+      font-family: 'Inter', sans-serif; font-size: 0.75rem;
+      padding: 7px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong); background: transparent;
+      color: var(--muted2); cursor: pointer;
+    }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-primary {
+      font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 500;
+      padding: 7px 16px; border-radius: var(--radius-sm);
+      border: none; background: var(--text); color: var(--bg); cursor: pointer;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    /* ── FB STATUS ── */
+    #fb-status {
+      font-size: 0.65rem; color: var(--muted);
+      padding: 0.6rem 2rem 0; max-width: 820px; margin: 0 auto;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .dot.ok  { background: #3bbf8e; }
+    .dot.err { background: #ff6b6b; }
+
+    /* ── NAV ── */
+    .nav {
+      max-width: 820px; margin: 0 auto;
+      padding: 1.5rem 2rem 0;
+      display: flex; gap: 2px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 2rem;
     }
     .tab {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-      padding: 6px 14px;
-      border-radius: var(--radius-sm);
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      color: var(--muted2);
-      transition: all 0.15s;
+      font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 400;
+      padding: 7px 14px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--muted2); transition: all 0.15s; margin-bottom: -1px;
     }
     .tab:hover { color: var(--text); background: var(--surface2); }
-    .tab.active-queens { background: var(--queens-dim); color: var(--queens); font-weight: 500; }
-    .tab.active-tango  { background: var(--tango-dim);  color: var(--tango);  font-weight: 500; }
-    .tab.active-worldle{ background: var(--worldle-dim);color: var(--worldle);font-weight: 500; }
-    main {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 0 2rem 5rem;
-    }
-    .section { display: none; }
-    .section.visible { display: block; }
+    .tab.active-queens  { background: var(--queens-dim);  color: var(--queens);  font-weight: 500; border-bottom: 2px solid var(--queens); }
+    .tab.active-tango   { background: var(--tango-dim);   color: var(--tango);   font-weight: 500; border-bottom: 2px solid var(--tango); }
+    .tab.active-worldle { background: var(--worldle-dim); color: var(--worldle); font-weight: 500; border-bottom: 2px solid var(--worldle); }
 
-    /* --- STATS ROW --- */
+    /* ── VIEW TOGGLE ── */
+    .view-toggle { display: flex; gap: 4px; padding: 1.5rem 0 1.25rem; }
+    .vtab {
+      font-size: 0.72rem; padding: 5px 12px; border-radius: 99px;
+      border: 1px solid var(--border-strong); background: transparent;
+      color: var(--muted2); cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+    }
+    .vtab:hover { color: var(--text); }
+    .vtab.active { background: var(--surface2); color: var(--text); }
+
+    /* ── MAIN ── */
+    main { max-width: 820px; margin: 0 auto; padding: 0 2rem 5rem; }
+    .game-section { display: none; }
+    .game-section.visible { display: block; }
+    .view { display: none; }
+    .view.visible { display: block; }
+
+    /* ── STATS ── */
     .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 1px;
-      margin-bottom: 2rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: var(--border);
+      display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 1px; margin-bottom: 1.75rem;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; background: var(--border);
     }
-    .stat-card {
-      background: var(--surface);
-      padding: 1.25rem 1.25rem;
-    }
+    .stat-card { background: var(--surface); padding: 1.25rem; }
     .stat-card .label {
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 8px;
+      font-size: 0.62rem; letter-spacing: 0.08em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 8px;
     }
     .stat-card .value {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.75rem;
-      font-weight: 600;
-      line-height: 1;
-      letter-spacing: -0.02em;
+      font-size: 1.7rem; font-weight: 600; line-height: 1; letter-spacing: -0.02em;
     }
-    .stat-card .sub {
-      font-size: 0.68rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+    .stat-card .sub { font-size: 0.67rem; color: var(--muted); margin-top: 4px; }
 
-    /* --- FORM --- */
+    /* ── FORM ── */
     .add-form {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-bottom: 1.5rem;
-      background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem; margin-bottom: 1.5rem; background: var(--surface);
     }
-    .add-form .form-title {
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
+    .form-title {
+      font-size: 0.62rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 1rem;
     }
-    .form-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .field label {
-      font-size: 0.66rem;
-      color: var(--muted2);
-      letter-spacing: 0.03em;
-    }
+    .form-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 0.65rem; color: var(--muted2); letter-spacing: 0.03em; }
     .field input {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      background: var(--surface2);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      padding: 8px 11px;
-      color: var(--text);
-      width: 130px;
-      outline: none;
-      transition: border-color 0.15s;
+      font-family: 'Inter', sans-serif; font-size: 0.82rem;
+      background: var(--surface2); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm); padding: 8px 11px;
+      color: var(--text); width: 130px; outline: none; transition: border-color 0.15s;
     }
     .field input:focus { border-color: var(--muted2); }
-    .field input[type="date"] { width: 150px; color-scheme: dark; }
+    .field input[type="date"] { width: 152px; color-scheme: dark; }
     .field input.narrow { width: 80px; }
     .btn-add {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      padding: 9px 18px;
-      border-radius: var(--radius-sm);
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
-      color: #000;
-      align-self: flex-end;
+      font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500;
+      padding: 9px 18px; border-radius: var(--radius-sm); border: none;
+      cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+      color: #000; align-self: flex-end;
     }
     .btn-add:hover { opacity: 0.85; }
     .btn-add:active { transform: scale(0.97); }
@@ -188,94 +210,43 @@
     .btn-tango   { background: var(--tango); }
     .btn-worldle { background: var(--worldle); }
 
-    /* --- TABLE --- */
-    .table-wrap {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.78rem;
-    }
+    /* ── TABLE ── */
+    .table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
     th {
-      text-align: left;
-      font-size: 0.63rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      font-weight: 400;
+      text-align: left; font-size: 0.62rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 10px 16px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); font-weight: 400;
     }
-    td {
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-      color: var(--text);
-    }
+    td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--surface2); }
-    .chip {
-      display: inline-block;
-      font-size: 0.68rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 500;
-    }
+    .chip { display: inline-block; font-size: 0.67rem; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
     .chip-queens  { background: var(--queens-dim);  color: var(--queens); }
     .chip-tango   { background: var(--tango-dim);   color: var(--tango); }
     .chip-worldle { background: var(--worldle-dim); color: var(--worldle); }
     .btn-del {
-      background: none;
-      border: 1px solid transparent;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 0.68rem;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.1s;
+      background: none; border: 1px solid transparent; cursor: pointer;
+      color: var(--muted); font-size: 0.67rem; padding: 3px 8px;
+      border-radius: 4px; font-family: 'Inter', sans-serif; transition: all 0.1s;
     }
     .btn-del:hover { color: #ff6b6b; border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.06); }
-    .empty-state {
-      padding: 3rem 1rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.75rem;
-      letter-spacing: 0.02em;
-    }
+    .empty-state { padding: 3rem 1rem; text-align: center; color: var(--muted); font-size: 0.74rem; }
 
-    /* --- CHART --- */
+    /* ── CHART ── */
     .chart-wrap {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.25rem 1rem;
-      margin-bottom: 1.5rem;
-      background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem 1.25rem 1rem; margin-bottom: 1.5rem; background: var(--surface);
     }
-    .chart-title {
-      font-size: 0.63rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
+    .chart-title { font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
     canvas { width: 100% !important; }
 
-    /* --- WORLDLE tries badges --- */
+    /* ── WORLDLE BADGES ── */
     .tries-badge {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600;
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-flex; align-items: center; justify-content: center;
     }
     .tries-1 { background: rgba(59,191,100,0.15); color: #3bbf64; }
     .tries-2 { background: rgba(59,191,142,0.15); color: #3bbf8e; }
@@ -284,378 +255,519 @@
     .tries-5 { background: rgba(240,140,80,0.15);  color: #f08c50; }
     .tries-6plus { background: rgba(255,80,80,0.15); color: #ff6b6b; }
 
+    /* ── LEADERBOARD ── */
+    .lb-topbar {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;
+    }
+    .lb-topbar span { font-size: 0.68rem; color: var(--muted); }
+    .lb-refresh {
+      font-family: 'Inter', sans-serif; font-size: 0.7rem; color: var(--muted2);
+      background: none; border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; transition: all 0.15s;
+    }
+    .lb-refresh:hover { color: var(--text); border-color: var(--muted2); }
+    .lb-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .lb-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto auto;
+      align-items: center; gap: 0 12px;
+      padding: 11px 16px; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-row:hover { background: var(--surface2); }
+    .lb-row.me { background: var(--surface2); }
+    .lb-rank {
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600;
+      color: var(--muted); text-align: center;
+    }
+    .lb-rank.gold   { color: #f5c542; }
+    .lb-rank.silver { color: #aaa; }
+    .lb-rank.bronze { color: #cd7f32; }
+    .lb-name { font-size: 0.78rem; color: var(--muted2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row.me .lb-name { color: var(--text); font-weight: 500; }
+    .lb-score { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 0.85rem; text-align: right; }
+    .lb-date { font-size: 0.67rem; color: var(--muted); text-align: right; }
+    .lb-spinner { padding: 2.5rem; text-align: center; color: var(--muted); font-size: 0.74rem; }
+    .lb-no-name {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      font-size: 0.75rem; color: var(--muted2); margin-bottom: 1.25rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .lb-no-name button {
+      font-family: 'Inter', sans-serif; font-size: 0.73rem; font-weight: 500;
+      padding: 6px 14px; border-radius: var(--radius-sm); border: none;
+      background: var(--text); color: var(--bg); cursor: pointer; white-space: nowrap;
+    }
+    .config-notice {
+      background: rgba(240,140,80,0.07); border: 1px solid rgba(240,140,80,0.22);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      font-size: 0.75rem; color: var(--tango); line-height: 1.65;
+    }
+    .config-notice strong { font-weight: 500; display: block; margin-bottom: 0.3rem; font-size: 0.8rem; }
+    .config-notice code {
+      background: rgba(240,140,80,0.15); border-radius: 3px;
+      padding: 1px 5px; font-size: 0.7rem; font-family: monospace;
+    }
+
     @media (max-width: 600px) {
-      header, .tabs, main { padding-left: 1rem; padding-right: 1rem; }
+      header, .nav, main { padding-left: 1rem; padding-right: 1rem; }
+      #fb-status { padding-left: 1rem; }
       .stats-row { grid-template-columns: 1fr 1fr; }
       .form-row { flex-direction: column; }
       .field input, .field input[type="date"], .field input.narrow { width: 100%; }
       .btn-add { width: 100%; text-align: center; }
+      .lb-row { grid-template-columns: 30px 1fr auto; }
+      .lb-date { display: none; }
     }
   </style>
 </head>
 <body>
 
+<!-- ══ NAME MODAL ═══════════════════════════════════════════ -->
+<div id="name-modal">
+  <div class="modal-box">
+    <h2>Your display name</h2>
+    <p>This name appears on the leaderboard when you submit a score. Pick something others will recognise.</p>
+    <input type="text" id="modal-input" placeholder="e.g. Alex" maxlength="24" />
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveName()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HEADER ════════════════════════════════════════════════ -->
 <header>
   <h1>Game Tracker</h1>
-  <p>LinkedIn · Queens · Tango &nbsp;|&nbsp; Worldle</p>
+  <div id="player-name-display" onclick="openModal()">Set your name →</div>
 </header>
+<div id="fb-status"><span class="dot" id="fb-dot"></span><span id="fb-label">Connecting…</span></div>
 
-<div class="tabs">
-  <button class="tab active-queens" onclick="switchTab('queens')">Queens</button>
-  <button class="tab" onclick="switchTab('tango')">Tango</button>
-  <button class="tab" onclick="switchTab('worldle')">Worldle</button>
-</div>
+<!-- ══ GAME TABS ══════════════════════════════════════════════ -->
+<nav class="nav">
+  <button class="tab active-queens" data-game="queens"  onclick="switchGame('queens')">Queens</button>
+  <button class="tab"               data-game="tango"   onclick="switchGame('tango')">Tango</button>
+  <button class="tab"               data-game="worldle" onclick="switchGame('worldle')">Worldle</button>
+</nav>
 
 <main>
 
-  <!-- ══════════ QUEENS ══════════ -->
-  <div id="sec-queens" class="section visible">
-    <div class="stats-row" id="stats-queens"></div>
-    <div class="chart-wrap">
-      <div class="chart-title">Time trend (seconds)</div>
-      <canvas id="chart-queens" height="120"></canvas>
+  <!-- Queens -->
+  <div id="sec-queens" class="game-section visible">
+    <div class="view-toggle">
+      <button class="vtab active" onclick="switchView('queens','mine',this)">My scores</button>
+      <button class="vtab"        onclick="switchView('queens','lb',this)">Leaderboard</button>
     </div>
-    <div class="add-form">
-      <div class="form-title">Add result</div>
-      <div class="form-row">
-        <div class="field">
-          <label>Date</label>
-          <input type="date" id="q-date" />
+    <div id="view-queens-mine" class="view visible">
+      <div class="stats-row" id="stats-queens"></div>
+      <div class="chart-wrap"><div class="chart-title">Time trend</div><canvas id="chart-queens" height="110"></canvas></div>
+      <div class="add-form">
+        <div class="form-title">Add result</div>
+        <div class="form-row">
+          <div class="field"><label>Date</label><input type="date" id="q-date" /></div>
+          <div class="field"><label>Time (mm:ss)</label><input type="text" id="q-time" placeholder="01:34" /></div>
+          <button class="btn-add btn-queens" onclick="addEntry('queens')">+ Add</button>
         </div>
-        <div class="field">
-          <label>Time (mm:ss)</label>
-          <input type="text" id="q-time" placeholder="01:34" />
-        </div>
-        <button class="btn-add btn-queens" onclick="addEntry('queens')">+ Add</button>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Date</th><th>Time</th><th>Score</th><th></th></tr></thead>
         <tbody id="tbody-queens"></tbody>
-      </table>
+      </table></div>
     </div>
+    <div id="view-queens-lb" class="view"><div id="lb-queens"></div></div>
   </div>
 
-  <!-- ══════════ TANGO ══════════ -->
-  <div id="sec-tango" class="section">
-    <div class="stats-row" id="stats-tango"></div>
-    <div class="chart-wrap">
-      <div class="chart-title">Time trend (seconds)</div>
-      <canvas id="chart-tango" height="120"></canvas>
+  <!-- Tango -->
+  <div id="sec-tango" class="game-section">
+    <div class="view-toggle">
+      <button class="vtab active" onclick="switchView('tango','mine',this)">My scores</button>
+      <button class="vtab"        onclick="switchView('tango','lb',this)">Leaderboard</button>
     </div>
-    <div class="add-form">
-      <div class="form-title">Add result</div>
-      <div class="form-row">
-        <div class="field">
-          <label>Date</label>
-          <input type="date" id="t-date" />
+    <div id="view-tango-mine" class="view visible">
+      <div class="stats-row" id="stats-tango"></div>
+      <div class="chart-wrap"><div class="chart-title">Time trend</div><canvas id="chart-tango" height="110"></canvas></div>
+      <div class="add-form">
+        <div class="form-title">Add result</div>
+        <div class="form-row">
+          <div class="field"><label>Date</label><input type="date" id="t-date" /></div>
+          <div class="field"><label>Time (mm:ss)</label><input type="text" id="t-time" placeholder="00:58" /></div>
+          <button class="btn-add btn-tango" onclick="addEntry('tango')">+ Add</button>
         </div>
-        <div class="field">
-          <label>Time (mm:ss)</label>
-          <input type="text" id="t-time" placeholder="00:58" />
-        </div>
-        <button class="btn-add btn-tango" onclick="addEntry('tango')">+ Add</button>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Date</th><th>Time</th><th>Score</th><th></th></tr></thead>
         <tbody id="tbody-tango"></tbody>
-      </table>
+      </table></div>
     </div>
+    <div id="view-tango-lb" class="view"><div id="lb-tango"></div></div>
   </div>
 
-  <!-- ══════════ WORLDLE ══════════ -->
-  <div id="sec-worldle" class="section">
-    <div class="stats-row" id="stats-worldle"></div>
-    <div class="chart-wrap">
-      <div class="chart-title">Tries per day</div>
-      <canvas id="chart-worldle" height="120"></canvas>
+  <!-- Worldle -->
+  <div id="sec-worldle" class="game-section">
+    <div class="view-toggle">
+      <button class="vtab active" onclick="switchView('worldle','mine',this)">My scores</button>
+      <button class="vtab"        onclick="switchView('worldle','lb',this)">Leaderboard</button>
     </div>
-    <div class="add-form">
-      <div class="form-title">Add result</div>
-      <div class="form-row">
-        <div class="field">
-          <label>Date</label>
-          <input type="date" id="w-date" />
+    <div id="view-worldle-mine" class="view visible">
+      <div class="stats-row" id="stats-worldle"></div>
+      <div class="chart-wrap"><div class="chart-title">Tries per day</div><canvas id="chart-worldle" height="110"></canvas></div>
+      <div class="add-form">
+        <div class="form-title">Add result</div>
+        <div class="form-row">
+          <div class="field"><label>Date</label><input type="date" id="w-date" /></div>
+          <div class="field"><label>Tries (1–6)</label><input type="number" class="narrow" id="w-tries" min="1" max="6" placeholder="3" /></div>
+          <div class="field"><label>Country (optional)</label><input type="text" id="w-country" placeholder="Finland" /></div>
+          <button class="btn-add btn-worldle" onclick="addEntry('worldle')">+ Add</button>
         </div>
-        <div class="field">
-          <label>Tries (1–6+)</label>
-          <input type="number" class="narrow" id="w-tries" min="1" max="6" placeholder="3" />
-        </div>
-        <div class="field">
-          <label>Country (optional)</label>
-          <input type="text" id="w-country" placeholder="Finland" />
-        </div>
-        <button class="btn-add btn-worldle" onclick="addEntry('worldle')">+ Add</button>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Date</th><th>Tries</th><th>Country</th><th></th></tr></thead>
         <tbody id="tbody-worldle"></tbody>
-      </table>
+      </table></div>
     </div>
+    <div id="view-worldle-lb" class="view"><div id="lb-worldle"></div></div>
   </div>
 
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script>
-// ── STORAGE ──────────────────────────────────────────────
-const KEY = 'gametracker_v1';
-function load() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || {queens:[], tango:[], worldle:[]}; }
-  catch(e) { return {queens:[], tango:[], worldle:[]}; }
-}
-function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
+<script type="module">
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  STEP 1 — Paste your Firebase config here.
+//  Get it from: Firebase Console → Project Settings → Your apps → SDK setup
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const FIREBASE_CONFIG = {
+  apiKey:            "REPLACE_WITH_YOUR_API_KEY",
+  authDomain:        "REPLACE_WITH_YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket:     "REPLACE_WITH_YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+  appId:             "REPLACE_WITH_YOUR_APP_ID"
+};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// ── UTILS ────────────────────────────────────────────────
+import { initializeApp }                  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc,
+         query, orderBy, limit, getDocs,
+         serverTimestamp }                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const configured = !FIREBASE_CONFIG.apiKey.startsWith('REPLACE');
+let db = null;
+
+if (configured) {
+  try {
+    const app = initializeApp(FIREBASE_CONFIG);
+    db = getFirestore(app);
+    fbStatus(true);
+  } catch(e) { fbStatus(false); }
+} else {
+  fbStatus(null);
+}
+
+function fbStatus(ok) {
+  const dot = document.getElementById('fb-dot');
+  const lbl = document.getElementById('fb-label');
+  if (ok === null) { dot.className='dot'; lbl.textContent='Firebase not configured — leaderboards disabled'; }
+  else if (ok)     { dot.className='dot ok';  lbl.textContent='Connected'; }
+  else             { dot.className='dot err'; lbl.textContent='Firebase error — check config'; }
+}
+
+// ── LOCAL STORAGE ─────────────────────────────────────────
+const LS_DATA = 'gt_v2', LS_NAME = 'gt_name';
+const load  = () => { try { return JSON.parse(localStorage.getItem(LS_DATA))||{queens:[],tango:[],worldle:[]}; } catch(e){ return {queens:[],tango:[],worldle:[]}; } };
+const save  = d => localStorage.setItem(LS_DATA, JSON.stringify(d));
+const getName = () => localStorage.getItem(LS_NAME) || '';
+const setName = n => localStorage.setItem(LS_NAME, n);
+
+// ── UTILS ─────────────────────────────────────────────────
 function parseTime(s) {
-  s = s.trim();
-  if (!s) return null;
-  if (s.includes(':')) {
-    const [m, sec] = s.split(':').map(Number);
-    if (isNaN(m) || isNaN(sec)) return null;
-    return m * 60 + sec;
-  }
-  const n = Number(s);
-  return isNaN(n) ? null : n;
+  s = (s||'').trim();
+  if (s.includes(':')) { const [m,sec]=s.split(':').map(Number); return (isNaN(m)||isNaN(sec)) ? null : m*60+sec; }
+  const n=Number(s); return isNaN(n)?null:n;
 }
-function fmtTime(secs) {
-  const m = Math.floor(secs / 60);
-  const s = secs % 60;
-  return m + ':' + String(s).padStart(2, '0');
-}
-function fmtDate(d) {
-  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'2-digit'});
-}
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+const fmtTime  = s => { const m=Math.floor(s/60),sc=s%60; return m+':'+String(sc).padStart(2,'0'); };
+const fmtDate  = d => new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});
+const fmtTs    = ts => { if(!ts) return ''; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}); };
+const todayStr = () => new Date().toISOString().slice(0,10);
+function pctScore(v, all) {
+  if(all.length<2) return null;
+  const mn=Math.min(...all), mx=Math.max(...all);
+  return mn===mx ? null : 100-Math.round(((v-mn)/(mx-mn))*100);
 }
 
-// ── SCORE (rank within personal bests) ───────────────────
-function computeScore(secs, allSecs) {
-  if (allSecs.length < 2) return null;
-  const best = Math.min(...allSecs), worst = Math.max(...allSecs);
-  if (best === worst) return null;
-  const pct = 100 - Math.round(((secs - best) / (worst - best)) * 100);
-  return pct;
+// ── NAME MODAL ────────────────────────────────────────────
+window.openModal = () => {
+  document.getElementById('modal-input').value = getName();
+  document.getElementById('name-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-input').focus(),40);
+};
+window.closeModal = () => document.getElementById('name-modal').classList.remove('open');
+window.saveName   = () => {
+  const n = document.getElementById('modal-input').value.trim();
+  if (!n) return;
+  setName(n); updateNameBar(); closeModal();
+};
+document.getElementById('modal-input').addEventListener('keydown', e => {
+  if(e.key==='Enter') window.saveName();
+  if(e.key==='Escape') window.closeModal();
+});
+document.getElementById('name-modal').addEventListener('click', e => {
+  if(e.target===document.getElementById('name-modal')) closeModal();
+});
+function updateNameBar() {
+  const n=getName(), el=document.getElementById('player-name-display');
+  el.textContent = n || 'Set your name →';
+  el.classList.toggle('set', !!n);
 }
+updateNameBar();
 
-// ── TABS ─────────────────────────────────────────────────
-let currentTab = 'queens';
+// ── NAV ───────────────────────────────────────────────────
 const charts = {};
-function switchTab(tab) {
-  document.querySelectorAll('.section').forEach(el => el.classList.remove('visible'));
-  document.getElementById('sec-' + tab).classList.add('visible');
-  document.querySelectorAll('.tab').forEach(b => {
-    b.className = 'tab';
-    if (b.textContent.toLowerCase() === tab) b.classList.add('active-' + tab);
-  });
-  currentTab = tab;
-  render(tab);
-}
+let currentGame = 'queens';
+
+window.switchGame = game => {
+  document.querySelectorAll('.game-section').forEach(s=>s.classList.remove('visible'));
+  document.getElementById('sec-'+game).classList.add('visible');
+  document.querySelectorAll('.tab').forEach(b=>{ b.className='tab'; if(b.dataset.game===game) b.classList.add('active-'+game); });
+  currentGame = game;
+  renderMine(game);
+};
+
+window.switchView = (game, view, btn) => {
+  document.querySelectorAll(`#sec-${game} .view`).forEach(v=>v.classList.remove('visible'));
+  document.getElementById(`view-${game}-${view}`).classList.add('visible');
+  document.querySelectorAll(`#sec-${game} .vtab`).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  view==='lb' ? loadLeaderboard(game) : renderMine(game);
+};
 
 // ── ADD ENTRY ─────────────────────────────────────────────
-function addEntry(game) {
+window.addEntry = async game => {
   const data = load();
-  if (game === 'queens' || game === 'tango') {
-    const dateEl = document.getElementById((game === 'queens' ? 'q' : 't') + '-date');
-    const timeEl = document.getElementById((game === 'queens' ? 'q' : 't') + '-time');
-    const date = dateEl.value || todayStr();
-    const secs = parseTime(timeEl.value);
-    if (secs === null || secs <= 0) { alert('Please enter a valid time like 01:34'); return; }
-    data[game].unshift({ date, secs });
-    dateEl.value = ''; timeEl.value = '';
+  let payload;
+  if (game==='queens'||game==='tango') {
+    const pre = game==='queens'?'q':'t';
+    const dateEl=document.getElementById(pre+'-date'), timeEl=document.getElementById(pre+'-time');
+    const date=dateEl.value||todayStr(), secs=parseTime(timeEl.value);
+    if(!secs||secs<=0){ alert('Enter a time like 01:34'); return; }
+    data[game].unshift({date,secs});
+    save(data); dateEl.value=''; timeEl.value='';
+    renderMine(game);
+    payload={secs,date};
   } else {
-    const date = document.getElementById('w-date').value || todayStr();
-    const tries = parseInt(document.getElementById('w-tries').value);
-    const country = document.getElementById('w-country').value.trim();
-    if (isNaN(tries) || tries < 1) { alert('Please enter number of tries (1 or more)'); return; }
-    data.worldle.unshift({ date, tries, country });
-    document.getElementById('w-date').value = '';
-    document.getElementById('w-tries').value = '';
-    document.getElementById('w-country').value = '';
+    const date=document.getElementById('w-date').value||todayStr();
+    const tries=parseInt(document.getElementById('w-tries').value);
+    const country=document.getElementById('w-country').value.trim();
+    if(isNaN(tries)||tries<1){ alert('Enter tries (1–6)'); return; }
+    data.worldle.unshift({date,tries,country});
+    save(data);
+    document.getElementById('w-date').value='';
+    document.getElementById('w-tries').value='';
+    document.getElementById('w-country').value='';
+    renderMine('worldle');
+    payload={tries,date,country};
   }
-  save(data);
-  render(game);
-}
+  if(db && getName()) {
+    try { await addDoc(collection(db,'scores_'+game),{name:getName(),...payload,ts:serverTimestamp()}); }
+    catch(e){ console.warn('Firestore write failed',e); }
+  }
+};
 
-// ── DELETE ENTRY ──────────────────────────────────────────
-function deleteEntry(game, idx) {
-  const data = load();
-  data[game].splice(idx, 1);
-  save(data);
-  render(game);
-}
+window.deleteEntry = (game,idx) => {
+  const d=load(); d[game].splice(idx,1); save(d); renderMine(game);
+};
 
-// ── RENDER ────────────────────────────────────────────────
-function render(game) {
-  const data = load();
-  const entries = data[game];
-  if (game === 'queens' || game === 'tango') renderTimegame(game, entries);
-  else renderWorldle(entries);
+// ── RENDER MY SCORES ──────────────────────────────────────
+function renderMine(game) {
+  const entries = load()[game];
+  game==='worldle' ? renderWorldle(entries) : renderTimegame(game,entries);
 }
 
 function renderTimegame(game, entries) {
-  const allSecs = entries.map(e => e.secs);
-  const statsEl = document.getElementById('stats-' + game);
-  const best = allSecs.length ? Math.min(...allSecs) : null;
-  const avg  = allSecs.length ? Math.round(allSecs.reduce((a,b)=>a+b,0) / allSecs.length) : null;
-  const last = entries.length ? entries[0].secs : null;
-  statsEl.innerHTML = `
+  const secs=entries.map(e=>e.secs);
+  const best=secs.length?Math.min(...secs):null;
+  const avg=secs.length?Math.round(secs.reduce((a,b)=>a+b,0)/secs.length):null;
+  document.getElementById('stats-'+game).innerHTML=`
     <div class="stat-card">
       <div class="label">Best time</div>
-      <div class="value" style="color:var(--${game})">${best !== null ? fmtTime(best) : '—'}</div>
+      <div class="value" style="color:var(--${game})">${best!==null?fmtTime(best):'—'}</div>
       <div class="sub">personal record</div>
     </div>
     <div class="stat-card">
       <div class="label">Average</div>
-      <div class="value">${avg !== null ? fmtTime(avg) : '—'}</div>
-      <div class="sub">${allSecs.length} entries</div>
+      <div class="value">${avg!==null?fmtTime(avg):'—'}</div>
+      <div class="sub">${secs.length} entries</div>
     </div>
     <div class="stat-card">
       <div class="label">Last played</div>
-      <div class="value">${last !== null ? fmtTime(last) : '—'}</div>
-      <div class="sub">${entries.length ? fmtDate(entries[0].date) : '—'}</div>
+      <div class="value">${entries.length?fmtTime(entries[0].secs):'—'}</div>
+      <div class="sub">${entries.length?fmtDate(entries[0].date):'—'}</div>
     </div>`;
-
-  // chart (last 20, chronological)
-  const recent = [...entries].reverse().slice(-20);
-  const labels = recent.map(e => fmtDate(e.date));
-  const vals   = recent.map(e => e.secs);
-  renderLineChart('chart-' + game, labels, vals, getComputedStyle(document.documentElement).getPropertyValue('--' + game).trim() || '#888');
-
-  // table
-  const tbody = document.getElementById('tbody-' + game);
-  if (!entries.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No entries yet — add your first result above.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = entries.map((e, i) => {
-    const score = computeScore(e.secs, allSecs);
-    const scoreTxt = score !== null ? score + '%' : '—';
-    const isPB = e.secs === best;
+  const rec=[...entries].reverse().slice(-20);
+  renderLineChart('chart-'+game, rec.map(e=>fmtDate(e.date)), rec.map(e=>e.secs),
+    getComputedStyle(document.documentElement).getPropertyValue('--'+game).trim());
+  const tbody=document.getElementById('tbody-'+game);
+  if(!entries.length){ tbody.innerHTML='<tr><td colspan="4" class="empty-state">No entries yet.</td></tr>'; return; }
+  tbody.innerHTML=entries.map((e,i)=>{
+    const sc=pctScore(e.secs,secs);
     return `<tr>
       <td>${fmtDate(e.date)}</td>
-      <td style="font-weight:500">${fmtTime(e.secs)} ${isPB ? '⭑' : ''}</td>
-      <td><span class="chip chip-${game}">${scoreTxt}</span></td>
+      <td style="font-weight:500">${fmtTime(e.secs)}${e.secs===best?' ⭑':''}</td>
+      <td><span class="chip chip-${game}">${sc!==null?sc+'%':'—'}</span></td>
       <td><button class="btn-del" onclick="deleteEntry('${game}',${i})">del</button></td>
     </tr>`;
   }).join('');
 }
 
 function renderWorldle(entries) {
-  const statsEl = document.getElementById('stats-worldle');
-  const allTries = entries.map(e => e.tries);
-  const best = allTries.length ? Math.min(...allTries) : null;
-  const avg  = allTries.length ? (allTries.reduce((a,b)=>a+b,0) / allTries.length).toFixed(1) : null;
-  const streak = computeStreak(entries);
-  statsEl.innerHTML = `
+  const all=entries.map(e=>e.tries);
+  const best=all.length?Math.min(...all):null;
+  const avg=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(1):null;
+  const streak=calcStreak(entries);
+  document.getElementById('stats-worldle').innerHTML=`
     <div class="stat-card">
       <div class="label">Best (fewest tries)</div>
-      <div class="value" style="color:var(--worldle)">${best !== null ? best : '—'}</div>
+      <div class="value" style="color:var(--worldle)">${best!==null?best:'—'}</div>
       <div class="sub">tries</div>
     </div>
     <div class="stat-card">
       <div class="label">Average tries</div>
-      <div class="value">${avg !== null ? avg : '—'}</div>
-      <div class="sub">${allTries.length} entries</div>
+      <div class="value">${avg!==null?avg:'—'}</div>
+      <div class="sub">${all.length} entries</div>
     </div>
     <div class="stat-card">
       <div class="label">Current streak</div>
       <div class="value">${streak}</div>
       <div class="sub">days played</div>
     </div>`;
-
-  const recent = [...entries].reverse().slice(-20);
-  const labels = recent.map(e => fmtDate(e.date));
-  const vals   = recent.map(e => e.tries);
-  renderBarChart('chart-worldle', labels, vals);
-
-  const tbody = document.getElementById('tbody-worldle');
-  if (!entries.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No entries yet — add your first result above.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = entries.map((e, i) => {
-    const cls = e.tries <= 1 ? 'tries-1' : e.tries === 2 ? 'tries-2' : e.tries === 3 ? 'tries-3' : e.tries === 4 ? 'tries-4' : e.tries === 5 ? 'tries-5' : 'tries-6plus';
+  const rec=[...entries].reverse().slice(-20);
+  renderBarChart('chart-worldle', rec.map(e=>fmtDate(e.date)), rec.map(e=>e.tries));
+  const tbody=document.getElementById('tbody-worldle');
+  if(!entries.length){ tbody.innerHTML='<tr><td colspan="4" class="empty-state">No entries yet.</td></tr>'; return; }
+  tbody.innerHTML=entries.map((e,i)=>{
+    const cls=e.tries<=1?'tries-1':e.tries===2?'tries-2':e.tries===3?'tries-3':e.tries===4?'tries-4':e.tries===5?'tries-5':'tries-6plus';
     return `<tr>
       <td>${fmtDate(e.date)}</td>
       <td><span class="tries-badge ${cls}">${e.tries}</span></td>
-      <td style="color:var(--muted); font-size:0.75rem">${e.country || '—'}</td>
+      <td style="color:var(--muted2);font-size:0.75rem">${e.country||'—'}</td>
       <td><button class="btn-del" onclick="deleteEntry('worldle',${i})">del</button></td>
     </tr>`;
   }).join('');
 }
 
-function computeStreak(entries) {
-  if (!entries.length) return 0;
-  const sorted = [...entries].sort((a,b) => b.date.localeCompare(a.date));
-  const today = todayStr();
-  let streak = 0;
-  let expect = today;
-  for (const e of sorted) {
-    if (e.date === expect) {
-      streak++;
-      const d = new Date(expect + 'T00:00:00');
-      d.setDate(d.getDate() - 1);
-      expect = d.toISOString().slice(0,10);
-    } else { break; }
+function calcStreak(entries) {
+  if(!entries.length) return 0;
+  const sorted=[...entries].sort((a,b)=>b.date.localeCompare(a.date));
+  let streak=0, expect=todayStr();
+  for(const e of sorted){
+    if(e.date===expect){ streak++; const d=new Date(expect+'T00:00:00'); d.setDate(d.getDate()-1); expect=d.toISOString().slice(0,10); }
+    else break;
   }
   return streak;
 }
 
+// ── LEADERBOARD ───────────────────────────────────────────
+async function loadLeaderboard(game) {
+  const el=document.getElementById('lb-'+game);
+  const myName=getName();
+
+  if(!configured){ el.innerHTML=configNotice(); return; }
+  if(!db){ el.innerHTML='<div class="empty-state">Firebase connection failed.</div>'; return; }
+
+  el.innerHTML='<div class="lb-spinner">Loading leaderboard…</div>';
+  try {
+    const field=game==='worldle'?'tries':'secs';
+    const snap=await getDocs(query(collection(db,'scores_'+game),orderBy(field,'asc'),limit(100)));
+
+    // Keep best per player
+    const best=new Map();
+    snap.forEach(doc=>{
+      const d=doc.data();
+      if(!best.has(d.name)||d[field]<best.get(d.name)[field]) best.set(d.name,d);
+    });
+    const rows=[...best.values()].sort((a,b)=>a[field]-b[field]).slice(0,50);
+
+    if(!rows.length){
+      el.innerHTML=noNamePrompt(myName)+'<div class="empty-state">No scores yet — be the first!</div>'; return;
+    }
+
+    const rankCls=r=>r===1?'gold':r===2?'silver':r===3?'bronze':'';
+    const rowsHtml=rows.map((r,i)=>{
+      const rank=i+1, isMe=myName&&r.name===myName;
+      const score=game==='worldle'?`${r.tries} ${r.tries===1?'try':'tries'}`:fmtTime(r.secs);
+      return `<div class="lb-row${isMe?' me':''}">
+        <span class="lb-rank ${rankCls(rank)}">${rank}</span>
+        <span class="lb-name">${r.name}${isMe?' (you)':''}</span>
+        <span class="lb-score">${score}</span>
+        <span class="lb-date">${fmtTs(r.ts)}</span>
+      </div>`;
+    }).join('');
+
+    el.innerHTML=noNamePrompt(myName)+`
+      <div class="lb-topbar">
+        <span>Best score per player · top 50</span>
+        <button class="lb-refresh" onclick="window._lb('${game}')">↻ Refresh</button>
+      </div>
+      <div class="lb-wrap">${rowsHtml}</div>`;
+  } catch(e){
+    el.innerHTML=`<div class="empty-state">Failed to load: ${e.message}</div>`;
+  }
+}
+window._lb = loadLeaderboard;
+
+function noNamePrompt(n) {
+  if(n) return '';
+  return `<div class="lb-no-name">
+    <span>Set a display name to appear on the leaderboard.</span>
+    <button onclick="openModal()">Set name</button>
+  </div>`;
+}
+
+function configNotice() {
+  return `<div class="config-notice">
+    <strong>Firebase not configured yet</strong>
+    Open <code>index.html</code>, find the <code>FIREBASE_CONFIG</code> block near the top of the
+    <code>&lt;script&gt;</code> tag, and replace the six <code>REPLACE_WITH_YOUR_…</code> placeholders
+    with your project's values.<br><br>
+    Get them from <code>console.firebase.google.com</code> → your project →
+    Project Settings → Your apps → Web app → SDK setup &amp; configuration.
+    <br><br>
+    Also set your Firestore rules to allow reads/writes (start with test mode for simplicity).
+  </div>`;
+}
+
 // ── CHARTS ────────────────────────────────────────────────
-function chartDefaults() {
+function chartCfg() {
   return {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: { legend: { display: false }, tooltip: {
-      callbacks: { label: ctx => ctx.dataset.type === 'bar' ? ctx.raw + ' tries' : fmtTime(ctx.raw) }
-    }},
-    scales: {
-      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#5a5a62', maxRotation: 30 }},
-      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: { family: 'Inter', size: 10 }, color: '#5a5a62' }}
+    responsive:true, maintainAspectRatio:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.wtype==='bar'?ctx.raw+' tries':fmtTime(ctx.raw)}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{family:'Inter',size:10},color:'#5a5a62',maxRotation:30}},
+      y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{family:'Inter',size:10},color:'#5a5a62'}}
     }
   };
 }
-
-function renderLineChart(id, labels, vals, color) {
-  const el = document.getElementById(id);
-  if (charts[id]) charts[id].destroy();
-  if (!vals.length) { el.getContext('2d').clearRect(0,0,el.width,el.height); return; }
-  const cfg = chartDefaults();
-  cfg.scales.y.ticks.callback = v => fmtTime(v);
-  charts[id] = new Chart(el, {
-    type: 'line',
-    data: { labels, datasets: [{ data: vals, borderColor: color, backgroundColor: color + '18', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: color }] },
-    options: cfg
-  });
+function renderLineChart(id,labels,vals,color){
+  const el=document.getElementById(id);
+  if(charts[id]) charts[id].destroy();
+  if(!vals.length) return;
+  const cfg=chartCfg(); cfg.scales.y.ticks.callback=v=>fmtTime(v);
+  charts[id]=new Chart(el,{type:'line',data:{labels,datasets:[{data:vals,borderColor:color,backgroundColor:color+'18',fill:true,tension:0.35,pointRadius:4,pointBackgroundColor:color}]},options:cfg});
 }
-
-function renderBarChart(id, labels, vals) {
-  const el = document.getElementById(id);
-  if (charts[id]) charts[id].destroy();
-  if (!vals.length) { el.getContext('2d').clearRect(0,0,el.width,el.height); return; }
-  const cfg = chartDefaults();
-  cfg.scales.y.min = 1; cfg.scales.y.max = 6;
-  cfg.scales.y.ticks.stepSize = 1;
-  cfg.datasets = [{ type: 'bar' }];
-  charts[id] = new Chart(el, {
-    type: 'bar',
-    data: { labels, datasets: [{ data: vals, backgroundColor: '#2d8a6b33', borderColor: '#2d8a6b', borderWidth: 1.5, borderRadius: 4, type: 'bar' }] },
-    options: cfg
-  });
+function renderBarChart(id,labels,vals){
+  const el=document.getElementById(id);
+  if(charts[id]) charts[id].destroy();
+  if(!vals.length) return;
+  const cfg=chartCfg(); cfg.scales.y.min=1; cfg.scales.y.max=6; cfg.scales.y.ticks.stepSize=1;
+  charts[id]=new Chart(el,{type:'bar',data:{labels,datasets:[{data:vals,wtype:'bar',backgroundColor:'#3bbf8e22',borderColor:'#3bbf8e',borderWidth:1.5,borderRadius:4}]},options:cfg});
 }
 
 // ── INIT ──────────────────────────────────────────────────
-document.getElementById('q-date').value = todayStr();
-document.getElementById('t-date').value = todayStr();
-document.getElementById('w-date').value = todayStr();
-render('queens');
+document.getElementById('q-date').value=todayStr();
+document.getElementById('t-date').value=todayStr();
+document.getElementById('w-date').value=todayStr();
+renderMine('queens');
 </script>
 </body>
 </html>
